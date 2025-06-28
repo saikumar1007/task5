@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mini E-Commerce Site</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f2f2f2;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      background: #444;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    main {
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .product {
+      background: white;
+      padding: 1rem;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .product img {
+      width: 100%;
+      max-width: 150px;
+    }
+    .product h3 { margin: 0.5rem 0; }
+    .product button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .cart {
+      position: fixed;
+      top: 70px;
+      right: 10px;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      width: 250px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    @media (max-width: 600px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>MyShop</h1>
+    <p>Mini E-Commerce Demo</p>
+  </header>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#products">Products</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <main id="products">
+  </main>
+
+  <div class="cart" id="cart">
+    <h3>🛒 Cart</h3>
+    <div id="cartItems"></div>
+    <p><strong>Total:</strong> ₹<span id="total">0</span></p>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: "T-Shirt", price: 499, image: "https://via.placeholder.com/150" },
+      { id: 2, name: "Shoes", price: 1499, image: "https://via.placeholder.com/150" },
+      { id: 3, name: "Watch", price: 999, image: "https://via.placeholder.com/150" },
+      { id: 4, name: "Backpack", price: 799, image: "https://via.placeholder.com/150" }
+    ];
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const productContainer = document.getElementById("products");
+    const cartItems = document.getElementById("cartItems");
+    const totalDisplay = document.getElementById("total");
+
+    function renderProducts() {
+      products.forEach(product => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <img src="${product.image}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>₹${product.price}</p>
+          <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+        productContainer.appendChild(div);
+      });
+    }
+
+    function addToCart(id) {
+      const item = products.find(p => p.id === id);
+      cart.push(item);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    }
+
+    function updateCart() {
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          ${item.name} - ₹${item.price}
+          <button onclick="removeItem(${index})">❌</button>
+        `;
+        cartItems.appendChild(div);
+        total += item.price;
+      });
+      totalDisplay.textContent = total;
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    }
+
+    renderProducts();
+    updateCart();
+  </script>
+
+</body>
+</html>
